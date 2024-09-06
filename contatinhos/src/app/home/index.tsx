@@ -3,6 +3,7 @@ import { Feather } from '@expo/vector-icons'
 import { styles } from './styles'
 import { Input } from '@/app/components/input'
 import { theme } from '@/theme'
+import { Contact } from '../components/contact'
 
 export function Home(){
     return (
@@ -17,6 +18,10 @@ export function Home(){
                         color={theme.colors.gray_300}></Feather>
                 </Input>
             </View>
+            <Contact contact={{
+                name: "Pedroso",
+                image: require("@/app/components/assets/avatar.jpeg")
+            }} />
         </View>
     )
 }
