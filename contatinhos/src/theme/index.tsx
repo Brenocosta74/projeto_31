@@ -1,13 +1,7 @@
-import { colors } from './colors'
+import { colors } from "./colors";
+import { fontFamily } from "./font-family";
 
 export const theme = {
     colors,
-}
-import { ActivityIndicator } from "react-native";
-
-export function Loading(){
-    return (
-        <ActivityIndicator style={stylrs.loading}
-        color={theme.colors.blue}/>
-    )
+    fontFamily,
 }
