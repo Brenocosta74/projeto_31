@@ -6,7 +6,7 @@ import {
 } from '@expo-google-fonts/ubuntu'
 
 import { Home } from '@/app/home' ;
-import { Loading } from '@/app/loading';
+import { Loading } from '@/app/components/loading';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
