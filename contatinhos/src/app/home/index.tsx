@@ -1,29 +1,37 @@
-import { Alert, View } from 'react-native'
+import { Alert, View, SectionList, Text } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useState, useEffect } from 'react'
 import { styles } from './styles'
 import * as Contacts from 'expo-contacts'
 import { Input } from '@/app/components/input'
 import { theme } from '@/theme'
-import { Contact } from '../components/contact'
+import { Contact, ContactProps } from '../components/contact'
 
-async function fetchContacts() {
-    try {
-        const { status } = await Contacts.requestPermissionsAsync()
-        if (status === Contacts.PermissionStatus.GRANTED){
-            const { data } = await Contacts.getContactsAsync()
-            console.log(data)}
-        } catch(error){
-            console.log(error)
-            Alert.alert("Contatos", "Não foi possível carregar os contatos")
-        }
-    }
-
-    useEffect(() => {
-        fetchContacts()
-    },[])
+type SectionListDataProps = {
+    title: string
+    data: ContactProps
+}
 
 export function Home(){
+    async function fetchContacts() {
+        try {
+            const { status } = await Contacts.requestPermissionsAsync()
+            if (status === Contacts.PermissionStatus.GRANTED){
+                const { data } = await Contacts.getContactsAsync()
+                console.log(data)}
+            } catch(error){
+                console.log(error)
+                Alert.alert("Contatos", "Não foi possível carregar os contatos")
+            }
+        }
+
+        const [contacts, setContacts] = useState([])
+        const [name, setName] = useState("")
+    
+        useEffect(() => {
+            fetchContacts()
+        },[])
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -36,10 +44,19 @@ export function Home(){
                         color={theme.colors.gray_300}></Feather>
                 </Input>
             </View>
-            <Contact contact={{
-                name: "Pedroso",
-                image: require("@/app/components/assets/avatar.jpeg")
-            }} />
-        </View>
+            <SectionList
+            sections={[{title: "R", data: [{id: "1", name: "Heloísa"}] }]}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item })=> (
+                <Contact contact={{
+                    name: item.name,
+                    image: require("@/app/components/assets/avatar.jpeg")
+                }} />
+            )}
+            renderSectionHeader={({ section }) => 
+                (<Text style={styles.section}>{section.title}</Text>)}
+            contentContainerStyle = {styles.contentList}
+            />
+            </View>
     )
 }
