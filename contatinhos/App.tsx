@@ -1,4 +1,5 @@
 import { StatusBar } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {
   useFonts,
@@ -22,11 +23,10 @@ export default function App() {
   }
 
 return( 
-  <>
-    <StatusBar barStyle={'light-content'}
-    backgroundColor={"transparent"}
+  <GestureHandlerRootView>
+    <StatusBar barStyle={'light-content'} backgroundColor={"transparent"}
     translucent/>
     <Home />
-  </>
+  </GestureHandlerRootView>
 )
 }

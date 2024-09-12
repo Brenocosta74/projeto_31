@@ -40,4 +40,13 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.gray_300,
         margin: 12,
     },
+    bottomSheetContent: {
+
+    },
+    phone:{
+
+    },
+    phoneNumber: {
+        
+    },
 })

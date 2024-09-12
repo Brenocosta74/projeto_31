@@ -1,11 +1,18 @@
-import { Alert, View, SectionList, Text } from 'react-native'
+import { useState, useEffect, useId, useRef } from 'react'
+import { Alert, View, SectionList, Text, Touchable } from 'react-native'
+
 import { Feather } from '@expo/vector-icons'
-import { useState, useEffect, useId } from 'react'
-import { styles } from './styles'
 import * as Contacts from 'expo-contacts'
-import { Input } from '@/app/components/input'
+import BottomSheet from '@gorhom/bottom-sheet'
+
+import { styles } from './styles'
 import { theme } from '@/theme'
-import { Contact, ContactProps } from '../components/contact'
+
+import { Input } from '@/app/components/input'
+import { Contact, ContactProps } from '@/app/components/contact'
+import bottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet'
+import { Avatar } from '../components/avatar'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 type SectionListDataProps = {
     title: string
@@ -13,6 +20,21 @@ type SectionListDataProps = {
 }
 
 export function Home(){
+    const [contacts, setContacts] = useState<SectionListDataProps[]>()
+    const [name, setName] = useState("")
+    const [contact, setContact] = useState<Contacts.Contact>()
+
+    const bottomSheetRef = useRef<BottomSheet>(null)
+
+    const handleBottomSheetOpen = () => bottomSheetRef.current?.expand()
+    const handleBottomSheetClose = () => bottomSheetRef.current?.snapToIndex(0)
+
+    async function handleOpenDetails(id: string){
+        const response = await Contacts.getContactByIdAsync(id)
+        setContact(response)
+        handleBottomSheetOpen()
+    }
+
     async function fetchContacts() {
         try {
             const { status } = await Contacts.requestPermissionsAsync()
@@ -30,9 +52,6 @@ export function Home(){
                 Alert.alert("Contatos", "Não foi possível carregar os contatos")
             }
         }
-
-        const [contacts, setContacts] = useState<SectionListDataProps[]>()
-        const [name, setName] = useState("")
     
         useEffect(() => {
             fetchContacts()
@@ -51,13 +70,15 @@ export function Home(){
                 </Input>
             </View>
             <SectionList
-            sections={[{title: "R", data: [{id: "1", name: "Heloísa"}] }]}
+            sections={contacts}
             keyExtractor={(item) => item.id}
             renderItem={({ item })=> (
-                <Contact contact={{
-                    name: item.name,
-                    image: require("@/app/components/assets/avatar.jpeg")
-                }} />
+                <TouchableOpacity
+                onPress={() => {
+                    handleOpenDetails(item.id)
+                }} >
+                <Contact contact={item} />
+                </TouchableOpacity>
             )}
             renderSectionHeader={({ section }) => 
                 (<Text style={styles.section}>{section.title}</Text>)}
@@ -65,6 +86,27 @@ export function Home(){
             showsVerticalScrollIndicator={false}
             SectionSeparatorComponent={() => <View style={styles.separator}/>}
             />
+            {
+                contact &&
+            <BottomSheet ref={bottomSheet} snapPoints={[1, 284]} handleComponent={() => null}>
+                    <Avatar name={contact.name} image={contact.image} variant='large' />
+                    <View style={styles.bottomSheetContent}>
+                        <Text>{contact.name}</Text>
+                    </View>
+                    <View style={styles.phone}>
+                        <Feather name="phone" size={18} color={theme.colors.blue}></Feather>
+                        <Text style={styles.phoneNumber}></Text>
+                    </View>
+                </BottomSheet>
+            }
+
+            {
+                contact?.phoneNumbers &&
+                <View style={styles.phone}>
+                    <Feather name="phone" size={18}color={theme.colors.blue}></Feather>
+                    <Text style={styles.phoneNumber}>{contact.phoneNumbers[0].number}</Text>
+                    </View>
+            }
             </View>
     )
 }
