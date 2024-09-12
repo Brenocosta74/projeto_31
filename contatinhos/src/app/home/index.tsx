@@ -25,7 +25,7 @@ export function Home(){
             }
         }
 
-        const [contacts, setContacts] = useState([])
+        const [contacts, setContacts] = useState<SectionListDataProps[]>()
         const [name, setName] = useState("")
     
         useEffect(() => {
